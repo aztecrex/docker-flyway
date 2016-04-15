@@ -1,0 +1,8 @@
+# don't leak secrets
+*.aes
+*.env
+
+# little mac doot (you don't know what i got)
+.DS_Store
+
+
