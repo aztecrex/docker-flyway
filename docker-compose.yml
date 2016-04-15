@@ -1,0 +1,6 @@
+version: '2'
+services:
+  migrate:
+    build:
+      context: ./
+      dockerfile: Dockerfile
