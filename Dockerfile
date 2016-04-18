@@ -30,4 +30,6 @@ RUN mkdir -p /working \
   && cd \
   && rm -rf /working
 
+COPY /scripts/* /usr/local/bin/
 
+ENTRYPOINT ["entrypoint.flyway"]
