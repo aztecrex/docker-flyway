@@ -21,7 +21,7 @@ help:           ## show this help
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/##//' \
     | sed 's/^/make /'
 
-${WORK}/.build: ${WORK}
+${WORK}/.build: ${WORK} Dockerfile
 	jet steps
 	touch ${WORK}/.build
 
