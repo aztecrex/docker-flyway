@@ -1,0 +1,14 @@
+- service: migrate
+  tag: ^$
+  command: /bin/true
+
+- type: serial
+  tag: ^[^_]
+  service: migrate
+  encrypted_dockercfg_path: dockercfg.encrypted
+  registry: https://index.docker.io/v1/
+  steps:
+    - type: push
+      tag: master
+      image_name:  cjengineering/flyway
+      image_tag: latest

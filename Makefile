@@ -21,5 +21,10 @@ help:           ## show this help
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/##//' \
     | sed 's/^/make /'
 
+${WORK}/.build: ${WORK}
+	jet steps
+	touch ${WORK}/.build
+
+
 ${WORK}:
 	mkdir -p ${WORK}
