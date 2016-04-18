@@ -1,5 +1,4 @@
 - service: migrate
-  tag: ^$
   command: /bin/true
 
 - type: serial
