@@ -33,3 +33,4 @@ RUN mkdir -p /working \
 COPY /scripts/* /usr/local/bin/
 
 ENTRYPOINT ["entrypoint.flyway"]
+CMD [""]
