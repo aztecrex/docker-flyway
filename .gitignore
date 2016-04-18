@@ -1,3 +1,7 @@
+# project working dir
+.tmp
+
+
 # don't leak secrets
 *.aes
 *.env
