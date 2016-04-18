@@ -5,10 +5,11 @@ MAINTAINER CJ Engineering
 # Basic stuff
 #  jdk - flyway is a Java app
 #  curl - to fetch the flyway tarball
-#  bash - fly scripts use it
+#  bash - flyway scripts use it
 RUN  apk update \
   && apk upgrade \
-  && apk add openjdk8 curl bash
+  && apk add openjdk8 curl bash \
+  && rm -rf /var/cache/apk/*
 
 # Flyway
 RUN  mkdir -p /working \
