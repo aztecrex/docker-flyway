@@ -26,7 +26,7 @@ RUN  mkdir -p /working \
 ENV PSQL_JDBC 9.4-1201-jdbc41
 RUN mkdir -p /working \
   && cd /working \
-  && curl --location --output /opt/flyway/jars/postgresql-${PSQL_JDBC}.jar --url http://search.maven.org/remotecontent?filepath=org/postgresql/postgresql/${PSQL_JDBC}/postgresql-${PSQL_JDBC}.jar \
+  && curl --location --output /opt/flyway/drivers/postgresql-${PSQL_JDBC}.jar --url http://search.maven.org/remotecontent?filepath=org/postgresql/postgresql/${PSQL_JDBC}/postgresql-${PSQL_JDBC}.jar \
   && cd \
   && rm -rf /working
 
