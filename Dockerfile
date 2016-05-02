@@ -17,7 +17,7 @@ RUN  mkdir -p /working \
   && curl -O https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/4.0/flyway-commandline-4.0.tar.gz \
   && mkdir -p /opt \
   && tar -C /opt -xzf flyway-commandline-4.0.tar.gz \
-  && ln -s /opt/flyway-4.0 /opt/flyway \
+  && mv /opt/flyway-4.0 /opt/flyway \
   && cd / \
   && rm -rf /working
 
@@ -31,6 +31,9 @@ RUN mkdir -p /working \
   && rm -rf /working
 
 COPY /scripts/* /usr/local/bin/
+# COPY /conf/* /opt/flyway/conf/
+# COPY /sql/* /opt/flyway/sql/
+
 
 ENTRYPOINT ["entrypoint.flyway"]
 CMD [""]

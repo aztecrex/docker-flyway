@@ -2,7 +2,7 @@
 
 WORK=.tmp
 
-.PHONY: all build clean realclean help
+.PHONY: all build clean realclean tutorial help
 
 all:            ## build all, currently synonym for 'build'
 all: build
@@ -17,11 +17,15 @@ realclean:      ## clean and remove all controls
 realclean: clean
 	rm -rf ${WORK}
 
+tutorial:       ## run tutorial from the Flyway website
+	docker-compose run flyway migrate
+
 help:           ## show this help
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/##//' \
     | sed 's/^/make /'
 
-${WORK}/.build: ${WORK} Dockerfile scripts/*
+${WORK}/.build: ${WORK} Dockerfile scripts/* sample/sql/* sample/conf/* \
+		codeship-services.yml codeship-steps.yml
 	jet steps
 	touch ${WORK}/.build
 

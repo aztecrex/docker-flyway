@@ -11,6 +11,5 @@ EOS
 elif [ "$1" = "sh" ]; then
   exec /bin/bash
 else
-  shift
   /opt/flyway/flyway "$@"
 fi

@@ -1,6 +1,14 @@
 version: '2'
 services:
-  migrate:
+  flyway:
     build:
       context: ./
       dockerfile: Dockerfile
+    volumes_from:
+      - sample
+  sample:
+    image: tianon/true
+    volumes:
+      - ./sample/sql:/opt/flyway/sql
+      - ./sample/conf:/opt/flyway/conf
+
