@@ -2,7 +2,7 @@
 
 WORK=.tmp
 
-.PHONY: all build clean realclean up down logs help sources
+.PHONY: all build clean realclean help
 
 all:            ## build all, currently synonym for 'build'
 all: build
