@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ "$1" = "" ]; then
+  cat << EOS 1>&2
+run with a Flyway command, or
+run with "sh" to get a shell
+
+Version info:
+EOS
+  exec /opt/flyway/flyway -v 1>&2
+elif [ "$1" = "sh" ]; then
+  exec /bin/bash
+else
+  /opt/flyway/flyway "$@"
+fi

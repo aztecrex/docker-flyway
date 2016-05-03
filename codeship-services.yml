@@ -2,5 +2,12 @@ migrate:
   build:
     context_path: .
     dockerfile_path: Dockerfile
+    image: flyway
+  volumes_from:
+    - sample
 
-
+sample:
+  image: tianon/true
+  volumes:
+    - ./sample/sql:/opt/flyway/sql
+    - ./sample/conf:/opt/flyway/conf

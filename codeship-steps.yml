@@ -1,5 +1,5 @@
 - service: migrate
-  command: /bin/true
+  command: migrate
 
 - type: serial
   tag: ^[^_]
