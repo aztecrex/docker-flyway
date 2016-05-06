@@ -1,5 +1,62 @@
 #!/bin/bash
 
+CONFIGFILE=/opt/flyway/conf/flyway.conf
+
+driver() {
+  if [ -f "$CONFIGFILE" ]; then
+    sed -n 's/^flyway\.url=jdbc:\([^:][^:]*\):.*/\1/p' "$CONFIGFILE"
+  fi
+}
+
+user() {
+  if [ -f "$CONFIGFILE" ]; then
+    sed -n 's/^flyway\.user=\([^:][^:]*\)$/\1/p' "$CONFIGFILE"
+  fi
+}
+
+password() {
+  if [ -f "$CONFIGFILE" ]; then
+    sed -n 's/^flyway\.password=\([^:][^:]*\)$/\1/p' "$CONFIGFILE"
+  fi
+}
+
+# jdbc:postgresql://dbhost:12345/dbname
+
+check-postgresql() {
+  local hostname=$(sed -n 's~^flyway\.url=jdbc:postgresql://\([^/:]*\)[/:].*$~\1~p' "$CONFIGFILE")
+  local port=$(sed -n 's~^flyway\.url=jdbc:postgresql://[^/:]*:\([0-9][0-9]*\)/.*$~\1~p' "$CONFIGFILE")
+  echo -n "check PostgreSQL server up at ${hostname}:${port} ... "
+  local status=$(nmap -v -p ${port:-5432} $hostname | sed -n 's/^[0-9]*\/tcp *open.*$/UP/p')
+  if [ "$status" = "UP" ]; then
+    echo "yes"
+    return 0
+  else
+    echo "no"
+    return 1
+  fi
+}
+
+settle-postgresql() {
+  for ((i=0; i<10; ++i)); do
+    if check-postgresql; then
+      return 0
+    fi
+    sleep 4
+  done
+  exit 1
+}
+
+settle() {
+  echo Driver: $(driver)
+  case $(driver) in
+    postgresql)
+      settle-postgresql
+      ;;
+    *)
+      ;;
+  esac
+}
+
 if [ "$1" = "" ]; then
   cat << EOS 1>&2
 run with a Flyway command, or
@@ -11,5 +68,6 @@ EOS
 elif [ "$1" = "sh" ]; then
   exec /bin/bash
 else
+  settle
   /opt/flyway/flyway "$@"
 fi

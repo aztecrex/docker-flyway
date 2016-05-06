@@ -6,9 +6,10 @@ MAINTAINER CJ Engineering
 #  jdk - flyway is a Java app
 #  curl - to fetch the flyway tarball
 #  bash - flyway scripts use it
+#  nmap - for checking remote port status
 RUN  apk update \
   && apk upgrade \
-  && apk add openjdk8 curl bash \
+  && apk add openjdk8 curl bash nmap \
   && rm -rf /var/cache/apk/*
 
 # Flyway
