@@ -2,6 +2,20 @@
 
 CONFIGFILE=/opt/flyway/conf/flyway.conf
 
+
+settle_deadline=$(expr $(date +%s) + 40)
+timeout() {
+  local now=$(date +%s)
+  if [ $now -gt $settle_deadline ]; then
+    echo timeout >&2
+    return 0
+  else
+    echo "remaining settle time: $(expr $settle_deadline - $now)" >&2
+    return 1
+  fi
+}
+
+
 driver() {
   if [ -f "$CONFIGFILE" ]; then
     sed -n 's/^flyway\.url=jdbc:\([^:][^:]*\):.*/\1/p' "$CONFIGFILE"
@@ -20,13 +34,12 @@ password() {
   fi
 }
 
-# jdbc:postgresql://dbhost:12345/dbname
-
 check-postgresql() {
   local hostname=$(sed -n 's~^flyway\.url=jdbc:postgresql://\([^/:]*\)[/:].*$~\1~p' "$CONFIGFILE")
   local port=$(sed -n 's~^flyway\.url=jdbc:postgresql://[^/:]*:\([0-9][0-9]*\)/.*$~\1~p' "$CONFIGFILE")
+  local port=${port:-5432}
   echo -n "check PostgreSQL server up at ${hostname}:${port} ... "
-  local status=$(nmap -v -p ${port:-5432} $hostname | sed -n 's/^[0-9]*\/tcp *open.*$/UP/p')
+  local status=$(nmap -v -p $port $hostname | sed -n 's/^[0-9]*\/tcp *open.*$/UP/p')
   if [ "$status" = "UP" ]; then
     echo "yes"
     return 0
@@ -37,17 +50,16 @@ check-postgresql() {
 }
 
 settle-postgresql() {
-  for ((i=0; i<10; ++i)); do
-    if check-postgresql; then
-      return 0
+  while ! check-postgresql; do
+    if timeout; then
+      return 1
     fi
-    sleep 4
+    sleep 2
   done
-  exit 1
+  return 0
 }
 
-settle() {
-  echo Driver: $(driver)
+settle-server() {
   case $(driver) in
     postgresql)
       settle-postgresql
@@ -55,6 +67,25 @@ settle() {
     *)
       ;;
   esac
+}
+
+check-config() {
+  echo "looking for Flyway config '${CONFIGFILE}'"
+  test -f "$CONFIGFILE"
+}
+
+settle-config() {
+  while ! check-config; do
+    if timeout; then
+      return 1
+    fi
+    sleep 2
+  done
+  return 0
+}
+
+settle() {
+  settle-config && settle-server
 }
 
 if [ "$1" = "" ]; then
@@ -68,6 +99,9 @@ EOS
 elif [ "$1" = "sh" ]; then
   exec /bin/bash
 else
-  settle
+  if ! settle; then
+    echo "dependencies not ready" >&2
+    exit 1
+  fi
   /opt/flyway/flyway "$@"
 fi
