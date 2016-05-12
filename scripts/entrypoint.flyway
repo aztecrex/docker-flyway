@@ -39,7 +39,7 @@ check-postgresql() {
   local port=$(sed -n 's~^flyway\.url=jdbc:postgresql://[^/:]*:\([0-9][0-9]*\)/.*$~\1~p' "$CONFIGFILE")
   local port=${port:-5432}
   echo -n "check PostgreSQL server up at ${hostname}:${port} ... "
-  local status=$(nmap -v -p $port $hostname | sed -n 's/^[0-9]*\/tcp *open.*$/UP/p')
+  local status=$(nmap -v -Pn -p $port $hostname | sed -n 's/^[0-9]*\/tcp *open.*$/UP/p')
   if [ "$status" = "UP" ]; then
     echo "yes"
     return 0
