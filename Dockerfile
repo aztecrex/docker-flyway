@@ -31,10 +31,11 @@ RUN mkdir -p /working \
   && cd \
   && rm -rf /working
 
+# entry point and helpers
 COPY /scripts/* /usr/local/bin/
-# COPY /conf/* /opt/flyway/conf/
-# COPY /sql/* /opt/flyway/sql/
 
+# signal SQL migrations ready if not mounted
+RUN touch /opt/flyway/sql/.ready
 
 ENTRYPOINT ["entrypoint.flyway"]
 CMD [""]

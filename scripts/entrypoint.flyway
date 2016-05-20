@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CONFIGFILE=/opt/flyway/conf/flyway.conf
-
+SQL_READYFILE=/opt/flyway/sql/.ready
 
 settle_deadline=$(expr $(date +%s) + 40)
 timeout() {
@@ -69,13 +69,13 @@ settle-server() {
   esac
 }
 
-check-config() {
-  echo "looking for Flyway config '${CONFIGFILE}'"
-  test -f "$CONFIGFILE"
+check-file() {
+  echo "checking file exists: '$1'"
+  test -f "$1"
 }
 
 settle-config() {
-  while ! check-config; do
+  while ! check-file "$CONFIGFILE"; do
     if timeout; then
       return 1
     fi
@@ -84,13 +84,24 @@ settle-config() {
   return 0
 }
 
+settle-sql() {
+  while ! check-file "$SQL_READYFILE"; do
+    if timeout; then
+      return 1
+    fi
+    sleep 2
+  done
+  return 0
+}
+
+
 settle() {
-  settle-config && settle-server
+  settle-config && settle-server && settle-sql
 }
 
 if [ "$1" = "" ]; then
   cat << EOS 1>&2
-run with a Flyway command, or
+run with a Flyway command to invoke flyway
 run with "sh" to get a shell
 
 Version info:
